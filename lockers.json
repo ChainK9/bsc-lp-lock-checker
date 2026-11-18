@@ -1,0 +1,238 @@
+[
+  {
+    "address": "0x407993575c91ce7643a4d4cCACc9A98c36eE1BBE",
+    "project": "PinkSale",
+    "version": "PinkLock02",
+    "code_hash": "0x88172df766517edffa7d598d05205119ce584cf79509cfa6c7db228921dfb82f",
+    "abi": "pinklock-v2",
+    "abi_confirmed": true,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/pinksale/index.js",
+      "https://sourcify.dev/server/v2/contract/56/0x407993575c91ce7643a4d4cCACc9A98c36eE1BBE"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Verified source (Sourcify exact match). No owner() and no proxy slots: each lock has its own owner."
+  },
+  {
+    "address": "0x7ee058420e5937496F5a2096f04caA7721cF70cc",
+    "project": "PinkSale",
+    "version": "PinkLock (proxy)",
+    "code_hash": "0x330b9f1afee9d71fb2ee42927a996a39889a45323883a66a194e210ab850d111",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/pinksale/index.js",
+      "https://sourcify.dev/server/v2/contract/56/0x7ee058420e5937496F5a2096f04caA7721cF70cc"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "EIP-1967 proxy. The code hash pins the proxy only, not its implementation. Custody only."
+  },
+  {
+    "address": "0xEb3a9C56d963b971d320f889bE2fb8B59853e449",
+    "project": "DxSale",
+    "version": "legacy locker (DefiLlama: LockersV3)",
+    "code_hash": "0x9235c7867cce162f46c25b8f8cca636e89671618d8579a0d615b09d5dac3257a",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js",
+      "https://sourcify.dev/server/v2/contract/56/0xEb3a9C56d963b971d320f889bE2fb8B59853e449",
+      "https://blocksec.com/blog/web3-security-dxsale-squidrouter-more"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [
+      {
+        "date": "2026-05-29",
+        "summary": "DxSale's legacy locker was drained of about $7.3M of LP tokens. The sources disagree on the cause: BlockSec describes logic flaws in unlockToken (missing state updates) and notes a separate deployer-key compromise that it says was not required; Rekt describes an ownership transfer to the attacker followed by owner-privileged unlocks. Listed for context only; this tool reads admin facts and does not detect logic flaws.",
+        "urls": [
+          "https://blocksec.com/blog/web3-security-dxsale-squidrouter-more",
+          "https://rekt.news/dxsale-rekt"
+        ]
+      }
+    ],
+    "notes": "The locker BlockSec names (0xeb3a...e449) and Rekt calls drained. Custody only."
+  },
+  {
+    "address": "0x8655E5c4D701186D16765d1CDcef6D5287E4679a",
+    "project": "DxSale",
+    "version": "legacy locker (DefiLlama: LockersV3)",
+    "code_hash": "0xf4ad4d81fc2ee318f4ec79a3ef6c67ae8871fb1bc38569e787372b98b711a98a",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js",
+      "https://sourcify.dev/server/v2/contract/56/0x8655E5c4D701186D16765d1CDcef6D5287E4679a"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Custody only."
+  },
+  {
+    "address": "0x5b5e94485c9628793B01A38762921Dc37B6829b6",
+    "project": "DxSale",
+    "version": "legacy locker (DefiLlama: LockersV3)",
+    "code_hash": "0x43e1dd3e1c38fed2cd6e1e5cbdf0b4ed9b652aa23324839790bc40763d1644f7",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js",
+      "https://sourcify.dev/server/v2/contract/56/0x5b5e94485c9628793B01A38762921Dc37B6829b6"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Custody only."
+  },
+  {
+    "address": "0x81E0eF68e103Ee65002d3Cf766240eD1c070334d",
+    "project": "DxSale",
+    "version": "legacy locker (commented out in DefiLlama)",
+    "code_hash": "0x89dcc2f3e8194a820ccc37c0b4858ec3462a997ea84107411b52f03e4a0a9fbd",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://rekt.news/dxsale-rekt",
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [
+      {
+        "date": "2026-06-02",
+        "summary": "Rekt's write-up lists this address among lockers whose ownership it says was transferred to the same address as the drained locker, and reports it as not drained at the time of writing. BlockSec's page does not name it.",
+        "urls": [
+          "https://rekt.news/dxsale-rekt"
+        ]
+      }
+    ],
+    "notes": "Address from Rekt; DefiLlama lists it commented out. Not verified on Sourcify. Custody only."
+  },
+  {
+    "address": "0x2D045410f002A95EFcEE67759A92518fA3FcE677",
+    "project": "DxSale",
+    "version": "legacy locker (commented out in DefiLlama)",
+    "code_hash": "0x17123b18ce0ce6f11851c06268bc26ca62b84f308d59506260bfbc3b2c58214a",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://rekt.news/dxsale-rekt",
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [
+      {
+        "date": "2026-06-02",
+        "summary": "Rekt's write-up lists this address among lockers whose ownership it says was transferred to the same address as the drained locker, and reports it as not drained at the time of writing. BlockSec's page does not name it.",
+        "urls": [
+          "https://rekt.news/dxsale-rekt"
+        ]
+      }
+    ],
+    "notes": "Address from Rekt; DefiLlama lists it commented out. Not verified on Sourcify. Custody only."
+  },
+  {
+    "address": "0xC765bddB93b0D1c1A88282BA0fa6B2d00E3e0c83",
+    "project": "UNCX Network",
+    "version": "UniswapV2Locker (PancakeSwap V2)",
+    "code_hash": "0x23157a45d396213e125dfaaf13e0fe3332c31e8e54e4084fb768f3920ed7addf",
+    "abi": "uncx-v2",
+    "abi_confirmed": true,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/unicrypt/config.js",
+      "https://sourcify.dev/server/v2/contract/56/0xC765bddB93b0D1c1A88282BA0fa6B2d00E3e0c83"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Verified source (Sourcify exact match). The owner can set a migrator; see the README limits."
+  },
+  {
+    "address": "0x0C89C0407775dd89b12918B9c0aa42Bf96518820",
+    "project": "Team Finance",
+    "version": "AdminUpgradeabilityProxy (implementation: LockToken)",
+    "code_hash": "0x17404120e429d743f170be02a42dd5018a3d340863ef7c7bf41db1baab1a1cd7",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/team-finance/config.js",
+      "https://sourcify.dev/server/v2/contract/56/0x0C89C0407775dd89b12918B9c0aa42Bf96518820"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "EIP-1967 proxy. The code hash pins the proxy only, not its implementation. Custody only."
+  },
+  {
+    "address": "0x7536592bb74b5d62eB82e8b93b17eed4eed9A85c",
+    "project": "Team Finance",
+    "version": "lockToken",
+    "code_hash": "0x6d2f98f6c8fd2ee517669e76b72eb2fa7cb1243a0fa1a127f13674941d5379d6",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/team-finance/config.js",
+      "https://sourcify.dev/server/v2/contract/56/0x7536592bb74b5d62eB82e8b93b17eed4eed9A85c"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Custody only."
+  },
+  {
+    "address": "0x10dD7FD1Bf3753235068ea757f2018dFef94B257",
+    "project": "DeepLock",
+    "version": "v1",
+    "code_hash": "0x58bf40a1994b9c7da48668518d87abfdba2820094fab63af522e6416133de944",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/deeplock/index.js",
+      "https://sourcify.dev/server/v2/contract/56/0x10dD7FD1Bf3753235068ea757f2018dFef94B257"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Custody only."
+  },
+  {
+    "address": "0x3f4D6bf08CB7A003488Ef082102C2e6418a4551e",
+    "project": "DeepLock",
+    "version": "v2",
+    "code_hash": "0x91735a249d9779ab3c4191e4f251a890923a17c9f8f30bf422f8bd2c996446d4",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/deeplock/index.js",
+      "https://sourcify.dev/server/v2/contract/56/0x3f4D6bf08CB7A003488Ef082102C2e6418a4551e"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Custody only."
+  },
+  {
+    "address": "0xF17A08A7d41F53B24AD07Eb322CBBdA2ebdeC04b",
+    "project": "GoPlus",
+    "version": "Locker V2",
+    "code_hash": "0x7de6a4d6f10db55addb8b1acd6b9e11c21e332aa761f85e156d7cf0de8d5191e",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/goplus-locker-v2/index.js",
+      "https://sourcify.dev/server/v2/contract/56/0xF17A08A7d41F53B24AD07Eb322CBBdA2ebdeC04b"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Custody only."
+  },
+  {
+    "address": "0x7AA03D4b9051cF299e7A2272953D0590FEE485A4",
+    "project": "GoPlus",
+    "version": "Locker V2 (second deployment)",
+    "code_hash": "0x25050175928a8b0478de1479c50c925c7ea36e8d79731090e34a3024b5651f21",
+    "abi": null,
+    "abi_confirmed": false,
+    "sources": [
+      "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/goplus-locker-v2/index.js",
+      "https://sourcify.dev/server/v2/contract/56/0x7AA03D4b9051cF299e7A2272953D0590FEE485A4"
+    ],
+    "checked": "2026-11-18",
+    "incidents": [],
+    "notes": "Custody only."
+  }
+]

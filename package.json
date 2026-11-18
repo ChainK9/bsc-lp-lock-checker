@@ -1,0 +1,45 @@
+{
+  "name": "bsc-lp-lock-checker",
+  "version": "0.1.0",
+  "description": "Check who holds a BSC token's PancakeSwap V2 liquidity (burned, time-locked, in a locker) and the locker's own admin facts: owner type, proxy slots, privileged functions.",
+  "type": "module",
+  "bin": {
+    "bsc-lp-lock-checker": "bin/bsc-lp-lock-checker.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "lockers.json",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "bsc",
+    "bnb",
+    "bnb-chain",
+    "liquidity-lock",
+    "lp-lock",
+    "locker",
+    "pinksale",
+    "unicrypt",
+    "rug-pull",
+    "smart-contract-security",
+    "cli"
+  ],
+  "homepage": "https://chaink9.com",
+  "license": "MIT",
+  "dependencies": {
+    "viem": "2.57.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChainK9/bsc-lp-lock-checker.git"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

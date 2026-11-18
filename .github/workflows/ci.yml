@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "23 3 * * *" # nightly: live checks
+
+jobs:
+  # Required: needs no network.
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      - run: node --test
+
+  # Not required: talks to BSC through the BSC_RPC repository variable (a public node if unset).
+  live:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      BSC_RPC: ${{ vars.BSC_RPC }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      # Every registry row still has its pinned runtime code.
+      - run: node scripts/check-registry.mjs
+      # Smoke: a PinkLock02 lock that opens in 2029. Asserts only that the run exits 0 and prints JSON.
+      - run: node bin/bsc-lp-lock-checker.js 0x45bEF2b92C6171c2b6F59b35f63a79765A215e21 --json | node -e 'JSON.parse(require("fs").readFileSync(0, "utf8"))'
