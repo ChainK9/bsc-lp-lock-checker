@@ -18,7 +18,7 @@ export const erc20Abi = parseAbi(["function balanceOf(address) view returns (uin
 export const pairAbi = parseAbi(["function factory() view returns (address)", "function token0() view returns (address)", "function token1() view returns (address)"]);
 export const factoryAbi = parseAbi(["function getPair(address,address) view returns (address)"]);
 
-// Both ABIs were read from Sourcify-verified source (exact match) and proved by calls on chain; see the README.
+// These ABIs were read from Sourcify-verified source and proved by calls on chain; see the README.
 export const pinkAbi = parseAbi([
   "function cumulativeLockInfo(address) view returns (address token, address factory, uint256 amount)",
   "function totalLockCountForToken(address) view returns (uint256)",
@@ -28,4 +28,12 @@ export const uncxAbi = parseAbi([
   "function uniswapFactory() view returns (address)",
   "function getNumLocksForToken(address) view returns (uint256)",
   "function tokenLocks(address, uint256) view returns (uint256 lockDate, uint256 amount, uint256 initialAmount, uint256 unlockDate, uint256 lockID, address owner)",
+]);
+// DxSale DxLockLPDep (DxLock_LP_5b5e.sol): every lock is also copied, as it was made, into an index per pair token.
+const dxLock = "(bool exists, bool locked, string logo, uint256 lockedAmount, uint256 lockedTime, uint256 startTime, address lpAddress)";
+export const dxsaleAbi = parseAbi([
+  "function Token0LPLockerCount(address) view returns (uint256)",
+  "function Token1LPLockerCount(address) view returns (uint256)",
+  `function DXLOCKERLPviaToken0Addr(address, uint256) view returns ${dxLock}`,
+  `function DXLOCKERLPviaToken1Addr(address, uint256) view returns ${dxLock}`,
 ]);

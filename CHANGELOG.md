@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 (2026-11-23)
+
+- DxSale lock records for the two `DxLock_LP_5b5e` lockers (`0x8655...`, `0x5b5e...`), `abi: "dxsale-lp"`.
+  They come from the locker's per-token index: no lock owner, dates that can only err early, and a pair's
+  locks count only while the locker still holds all of them. Fail-closed like the other readers.
+- A DxSale note in the report: the locker's owner can release any lock early with
+  `platformRelease(address,uint256)`.
+- The older DxSale locker (`0xEb3a...`) now says why its records are not read: its verified
+  `unlockToken` pays out before the unlock date, more than once. New optional registry field
+  `records_note`.
+- `scripts/check-registry.mjs` also checks the DxSale reader's functions.
+
 ## 0.1.0 (2026-11-19)
 
 - First release: `bsc-lp-lock-checker <token|pair>` for PancakeSwap V2 on BNB Smart Chain.

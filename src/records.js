@@ -65,6 +65,32 @@ export function assessUncx({ custody, count, records, now }) {
   return { verified: true, records: out };
 }
 
+/**
+ * DxSale DxLockLPDep records for one pair, from the locker's per-token index: `copies` are ALL `count` entries
+ * of that index for one of the pair's tokens. Every lock of the pair is in it, but each entry is a copy made at
+ * lock time: it has no lock owner and is never updated when the lock is extended, withdrawn or released early.
+ * An extension can only move the date later, so the copied date is the earliest the lock can open by its date.
+ * A withdrawal or an early release lowers the locker's balance, so the pair's locks are trusted only while the
+ * locker still holds all of them.
+ */
+export function assessDxsale({ pair, custody, count, copies, now }) {
+  if (count > MAX_RECORDS) return unverified(`the locker's index for this pair's token holds ${count} locks, more than the ${MAX_RECORDS} this tool reads`);
+  if (copies.length !== count) return unverified(`read ${copies.length} of ${count} index entries`);
+  const out = [];
+  let total = 0n;
+  for (const [i, c] of copies.entries()) {
+    if (c.lpAddress.toLowerCase() !== pair.toLowerCase()) continue;
+    if (!c.exists || !c.locked || c.lockedAmount <= 0n || c.startTime >= c.lockedTime) return unverified("records inconsistent: invalid lock state");
+    total += c.lockedAmount;
+    const base = { id: i.toString(), owner: null, unlockAt: Number(c.lockedTime) };
+    if (c.lockedTime >= 10n ** 10n) out.push(entry("unsupported", c.lockedAmount, { ...base, why: "unlock date is not in seconds" }));
+    else if (c.lockedTime <= BigInt(now)) out.push(entry("time_elapsed", c.lockedAmount, base));
+    else out.push(entry("time_locked", c.lockedAmount, { ...base, why: "date as stored when the lock was made; a later extension would only move it later" }));
+  }
+  if (total > custody) return unverified("records inconsistent: the locks add up to more than the locker holds, so at least one was withdrawn or released, and this index does not say which");
+  return { verified: true, records: out };
+}
+
 const sum = (xs) => xs.reduce((a, b) => a + b, 0n);
 
 /** a / b as a percentage rounded to two decimals, from integers. null when b is 0. */

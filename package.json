@@ -1,6 +1,6 @@
 {
   "name": "bsc-lp-lock-checker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Check who holds a BSC token's PancakeSwap V2 liquidity (burned, time-locked, in a locker) and the locker's own admin facts: owner type, proxy slots, privileged functions.",
   "type": "module",
   "bin": {

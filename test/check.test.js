@@ -72,4 +72,12 @@ test("the text report keeps custody and locked amounts apart and states facts wi
   assert.match(text, /no owner\(\) function/);
   assert.doesNotMatch(text, /safe|risky|dangerous|rug/i);
   assert.equal(JSON.parse(report(result, { json: true })).supply, (10n * e18).toString());
+
+  // A DxSale record has no lock owner, and the locker's early-release power is stated next to it.
+  const dx = structuredClone(result);
+  dx.lockers[0].row = { ...dx.lockers[0].row, project: "DxSale", version: "legacy locker", abi: "dxsale-lp" };
+  dx.lockers[0].assessment.records[0].owner = null;
+  const dxText = report(dx);
+  assert.match(dxText, /lock owner not recorded in this index/);
+  assert.match(dxText, /platformRelease\(address,uint256\)/);
 });

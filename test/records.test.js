@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { assessPink, assessUncx, buckets, pct, MAX_RECORDS } from "../src/records.js";
+import { assessPink, assessUncx, assessDxsale, buckets, pct, MAX_RECORDS } from "../src/records.js";
 import { FACTORY } from "../src/chain.js";
 
 const PAIR = "0x00000000000000000000000000000000000000a1";
@@ -62,6 +62,35 @@ test("uncx fail-closed: records above custody, lockID mismatch, short read, unlo
   assert.match(assessUncx({ custody: 9n * e18, count: 1, now: NOW, records: [uncx(7)] }).reason, /lockID/);
   assert.match(assessUncx({ custody: 9n * e18, count: 2, now: NOW, records: [uncx(0)] }).reason, /read 1 of 2/);
   assert.equal(assessUncx({ custody: 9n * e18, count: 1, now: NOW, records: [uncx(0, { unlockDate: 10n ** 12n })] }).records[0].status, "unsupported");
+});
+
+// A DxSale index entry, as copied at lock time. OTHER is another pair of the same token, which shares the index.
+const OTHER = "0x00000000000000000000000000000000000000c3";
+const dx = (o = {}) => ({ exists: true, locked: true, lockedAmount: 5n * e18, lockedTime: BigInt(NOW + 1000), startTime: 1_700_000_000n, lpAddress: PAIR, ...o });
+const runDx = (copies, o = {}) => assessDxsale({ pair: PAIR, custody: 10n * e18, count: copies.length, copies, now: NOW, ...o });
+
+test("dxsale: only this pair's entries count; future is time_locked, past is time_elapsed; no lock owner", () => {
+  const a = runDx([dx(), dx({ lpAddress: OTHER, lockedAmount: 99n * e18 }), dx({ lockedTime: BigInt(NOW - 1) })]);
+  assert.equal(a.verified, true);
+  assert.deepEqual(a.records.map((r) => [r.id, r.status]), [["0", "time_locked"], ["2", "time_elapsed"]]);
+  assert.equal(a.records[0].owner, null);
+  assert.match(a.records[0].why, /only move it later/);
+});
+
+test("dxsale fail-closed: locks above custody (one was withdrawn or released), bad state, short read, too many entries", () => {
+  // The index never marks a withdrawal, so a pair whose locks no longer fit in custody is not verified at all.
+  assert.match(runDx([dx(), dx()], { custody: 9n * e18 }).reason, /more than the locker holds/);
+  assert.match(runDx([dx({ locked: false })]).reason, /invalid lock state/);
+  assert.match(runDx([dx({ lockedAmount: 0n })]).reason, /invalid lock state/);
+  assert.match(runDx([dx({ startTime: BigInt(NOW + 2000) })]).reason, /invalid lock state/);
+  assert.match(runDx([dx()], { count: 2 }).reason, /read 1 of 2/);
+  assert.match(runDx([dx()], { count: MAX_RECORDS + 1 }).reason, /more than the 200/);
+  assert.equal(runDx([dx({ lockedTime: 10n ** 12n })]).records[0].status, "unsupported");
+});
+
+test("dxsale: another pair's broken entry is ignored, and an empty index is verified and empty", () => {
+  assert.equal(runDx([dx({ lpAddress: OTHER, locked: false })]).verified, true);
+  assert.deepEqual(runDx([]), { verified: true, records: [] });
 });
 
 test("pct rounds to two decimals and handles zero", () => {

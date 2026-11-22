@@ -111,19 +111,21 @@ A function being present in the code says it exists, not who can call it or whet
 
 ## The registry
 
-`lockers.json`, 14 BSC rows, each confirmed on chain on 2026-11-18 with `eth_getCode` at
-`bsc-rpc.publicnode.com`. Fields: `address`, `project`, `version`, `code_hash` (keccak-256 of the
-runtime code), `abi` (`pinklock-v2`, `uncx-v2` or `null`), `abi_confirmed`, `sources`, `checked`,
-`incidents`, `notes`. `abi_confirmed` is true only where verified source was read and the functions
-were proved by calls on chain; every other row is custody-only.
+`lockers.json`, 14 BSC rows, each confirmed on chain with `eth_getCode` at `bsc-rpc.publicnode.com`
+(on 2026-11-18; the three DxSale rows with verified source again on 2026-11-22). Fields: `address`,
+`project`, `version`, `code_hash` (keccak-256 of the runtime code), `abi` (`pinklock-v2`, `uncx-v2`,
+`dxsale-lp` or `null`), `abi_confirmed`, `sources`, `checked`, `incidents`, `notes`, and an optional
+`records_note` that says why a row without a reader has none. `abi_confirmed` is true only where
+verified source was read and the functions were proved by calls on chain; every other row is
+custody-only.
 
 | Project | Version | Address | Records | Code hash | Sources |
 |---|---|---|---|---|---|
 | PinkSale | PinkLock02 | `0x407993575c91ce7643a4d4cCACc9A98c36eE1BBE` | pinklock-v2 (confirmed) | `0x88172df7` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/pinksale/index.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0x407993575c91ce7643a4d4cCACc9A98c36eE1BBE) |
 | PinkSale | PinkLock (proxy) | `0x7ee058420e5937496F5a2096f04caA7721cF70cc` | custody only | `0x330b9f1a` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/pinksale/index.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0x7ee058420e5937496F5a2096f04caA7721cF70cc) |
-| DxSale | legacy locker (DefiLlama: LockersV3) | `0xEb3a9C56d963b971d320f889bE2fb8B59853e449` | custody only | `0x9235c786` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0xEb3a9C56d963b971d320f889bE2fb8B59853e449), [BlockSec](https://blocksec.com/blog/web3-security-dxsale-squidrouter-more) |
-| DxSale | legacy locker (DefiLlama: LockersV3) | `0x8655E5c4D701186D16765d1CDcef6D5287E4679a` | custody only | `0xf4ad4d81` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0x8655E5c4D701186D16765d1CDcef6D5287E4679a) |
-| DxSale | legacy locker (DefiLlama: LockersV3) | `0x5b5e94485c9628793B01A38762921Dc37B6829b6` | custody only | `0x43e1dd3e` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0x5b5e94485c9628793B01A38762921Dc37B6829b6) |
+| DxSale | legacy locker (DefiLlama: LockersV3) | `0xEb3a9C56d963b971d320f889bE2fb8B59853e449` | custody only: opens early (see below) | `0x9235c786` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0xEb3a9C56d963b971d320f889bE2fb8B59853e449), [BlockSec](https://blocksec.com/blog/web3-security-dxsale-squidrouter-more) |
+| DxSale | legacy locker (DefiLlama: LockersV3) | `0x8655E5c4D701186D16765d1CDcef6D5287E4679a` | dxsale-lp (confirmed) | `0xf4ad4d81` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0x8655E5c4D701186D16765d1CDcef6D5287E4679a) |
+| DxSale | legacy locker (DefiLlama: LockersV3) | `0x5b5e94485c9628793B01A38762921Dc37B6829b6` | dxsale-lp (confirmed) | `0x43e1dd3e` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0x5b5e94485c9628793B01A38762921Dc37B6829b6) |
 | DxSale | legacy locker (commented out in DefiLlama) | `0x81E0eF68e103Ee65002d3Cf766240eD1c070334d` | custody only | `0x89dcc2f3` | [Rekt](https://rekt.news/dxsale-rekt), [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js) |
 | DxSale | legacy locker (commented out in DefiLlama) | `0x2D045410f002A95EFcEE67759A92518fA3FcE677` | custody only | `0x17123b18` | [Rekt](https://rekt.news/dxsale-rekt), [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js) |
 | UNCX Network | UniswapV2Locker (PancakeSwap V2) | `0xC765bddB93b0D1c1A88282BA0fa6B2d00E3e0c83` | uncx-v2 (confirmed) | `0x23157a45` | [DefiLlama](https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/unicrypt/config.js), [Sourcify](https://sourcify.dev/server/v2/contract/56/0xC765bddB93b0D1c1A88282BA0fa6B2d00E3e0c83) |
@@ -143,6 +145,10 @@ Notes on how the rows were built:
   source there on the check date.
 - PinkLock02 and the UNCX V2 locker are Sourcify exact matches. Their record functions were read from
   that source and called on chain before the readers were written.
+- The three DxSale rows with a Sourcify link are Sourcify matches: the runtime code matches the
+  source, the metadata hash does not. `0x8655...` and `0x5b5e...` are built from the same file,
+  `DxLock_LP_5b5e.sol`, and `0xEb3a...` from an older `DxLock_LP.sol`. The DxSale reader was written
+  from that source and its functions were called on both lockers on 2026-11-22.
 - Two proxies (PinkLock proxy, Team Finance AdminUpgradeabilityProxy): the code hash pins the proxy, not the implementation
   behind it. That is acceptable only because no records are read for them.
 - Two DxSale rows come from Rekt's write-up, which says their ownership was transferred to the same
@@ -175,6 +181,21 @@ with no shared code, using `getLockById`):
   `editLock` cannot move a date earlier, so the tool counts such a lock as time-locked and prints the stored value and what it would be as milliseconds.
   It does not guess what the owner meant.
 
+DxSale locks were compared on 2026-11-22, between 21:10 and 21:25 UTC, with each lock's own record,
+`DXLOCKERLP(owner, n)`, read by a separate script that walks `LockerRecord`:
+
+- Two `0x8655...` locks on one pair (unlock 2070-10-20 and 2099-10-20) and one `0x5b5e...` lock
+  (2027-03-01): the index entries the tool reads matched the lock records on amount, unlock date and
+  pair, and custody equalled the locked total. Calling `unlockToken` from the `0x5b5e...` lock's owner
+  reverts with "tokens are still locked".
+- A pair where one of two `0x8655...` locks (dated 2021-09-02) was withdrawn: the index still lists
+  both as locked, custody is below their total, and the tool reports the records as not verified.
+- A `0x8655...` lock whose index entry says 2021-08-26: its own record says 2023-12-21, because it was
+  extended later. Index dates are never later than the real date, so the tool's dates err early.
+- `0xEb3a...`: calling `unlockToken` from the owners of four locks dated 2028, 2031, 2069 and 2099
+  succeeds now, years before their dates. The tool reports that locker's records as not read and
+  counts none of its LP as time-locked.
+
 ## Honest limits
 
 - **Admin facts are not a verdict.** A privileged function existing in the code says it exists. The tool
@@ -186,8 +207,22 @@ with no shared code, using `getLockById`):
 - **Only PancakeSwap V2 pairs.** Not V3 or V4 position lockers, and no discovery of every LP holder from
   logs. Holders other than the registry's lockers, `0x...dEaD` and the zero address show up only as
   "other holders", including lockers that are not in the registry.
-- **Records only for PinkLock02 and UNCX V2.** Team Finance, DxSale, DeepLock, GoPlus and the PinkLock
-  proxy get custody and admin facts only. Their records are not parsed yet.
+- **DxSale records come from an index of copies.** The two `DxLock_LP_5b5e` lockers keep each lock twice:
+  its own record under the lock owner, and a copy under each of the pair's tokens. Only the copies can be
+  found from a pair, and a copy has no lock owner and is never updated when a lock is extended, withdrawn
+  or released. So the tool shows no lock owner, the date it shows can only be earlier than the real one,
+  and it trusts a pair's locks only while the locker still holds all of them. A pair with any lock
+  withdrawn is reported as not verified. LP sent straight to the locker, outside a lock, could hide a
+  withdrawal; the tool cannot rule that out.
+- **DxSale owner release.** In the verified `DxLock_LP_5b5e` source the locker's owner can release any
+  lock before its date with `platformRelease(address,uint256)`, which sends the LP back to the lock
+  owner. For DxSale, "time-locked" means the date in the record.
+- **The older DxSale locker (`0xEb3a...`) has no time lock.** Its verified `unlockToken` pays out before
+  the unlock date and leaves the lock open, so a lock owner can withdraw early and more than once. Its
+  records are not read, and none of its LP counts as time-locked. The two DxSale rows from Rekt have no
+  verified source and stay custody-only.
+- **Records only for PinkLock02, UNCX V2 and the two newer DxSale lockers.** Team Finance, DeepLock,
+  GoPlus and the PinkLock proxy get custody and admin facts only. Their records are not parsed yet.
 - **Records are capped at 200 per locker and pair**, then reported as not verified.
 - **The code hash pins exact deployed code.** A redeployed locker at a new address is not in the registry
   until someone adds it. A proxy row pins only the proxy.
@@ -201,8 +236,8 @@ with no shared code, using `getLockById`):
 ## Roadmap
 
 - Weekly: add one or two lockers to `lockers.json` from GoPlus's list of BSC lockers, each confirmed
-  against verified source. Order: DxSale records, Team Finance records, Mudra, DeepLock, gempad. Each
-  gets a record parser where the ABI allows.
+  against verified source. Order: Team Finance records, Mudra, DeepLock, gempad. Each gets a record
+  parser where the ABI allows.
 - An incident log: registry rows gain dated `incidents` entries when a locker is exploited or changes
   owner.
 - PancakeSwap V3 position (NFT) lockers, then Uniswap V4 positions.

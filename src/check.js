@@ -1,9 +1,9 @@
 // The checker: pair -> LP custody -> lock records (only where the registry says they can be trusted) -> admin facts.
 import { decodeFunctionResult, encodeFunctionData, getAddress, isAddress } from "viem";
-import { DEAD, ZERO, FACTORY, WBNB, USDT, erc20Abi, pairAbi, factoryAbi, pinkAbi, uncxAbi } from "./chain.js";
+import { DEAD, ZERO, FACTORY, WBNB, USDT, erc20Abi, pairAbi, factoryAbi, pinkAbi, uncxAbi, dxsaleAbi } from "./chain.js";
 import { lockerFacts } from "./owner.js";
 import { redact } from "./redact.js";
-import { assessPink, assessUncx, buckets, MAX_RECORDS } from "./records.js";
+import { assessPink, assessUncx, assessDxsale, buckets, MAX_RECORDS } from "./records.js";
 
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
 
@@ -64,12 +64,35 @@ async function uncxRecords(rpc, row, pair, custody, now) {
   return assessUncx({ custody, count, records, now });
 }
 
+// Every lock of a pair is indexed under both of its tokens, so the smaller index holds them all with fewer reads.
+async function dxsaleRecords(rpc, row, found, custody, now) {
+  const counts = await rpc.multicall([
+    { address: row.address, abi: dxsaleAbi, functionName: "Token0LPLockerCount", args: [found.token0] },
+    { address: row.address, abi: dxsaleAbi, functionName: "Token1LPLockerCount", args: [found.token1] },
+  ]);
+  if (counts.some((x) => x.status !== "success")) return { verified: false, reason: "the locker's lock index could not be read" };
+  const side = counts[0].result <= counts[1].result ? 0 : 1;
+  const count = Number(counts[side].result);
+  let copies = [];
+  if (count <= MAX_RECORDS && count > 0) {
+    const fn = side === 0 ? "DXLOCKERLPviaToken0Addr" : "DXLOCKERLPviaToken1Addr";
+    const token = side === 0 ? found.token0 : found.token1;
+    const res = await rpc.multicall(Array.from({ length: count }, (_, i) => ({ address: row.address, abi: dxsaleAbi, functionName: fn, args: [token, BigInt(i)] })));
+    if (res.some((x) => x.status !== "success")) return { verified: false, reason: "a lock record could not be read" };
+    copies = res.map((x) => ({ exists: x.result[0], locked: x.result[1], lockedAmount: x.result[3], lockedTime: x.result[4], startTime: x.result[5], lpAddress: x.result[6] }));
+  }
+  return assessDxsale({ pair: found.pair, custody, count, copies, now });
+}
+
 // Records are read only for a locker whose runtime code is exactly the pinned code and whose ABI was confirmed.
-async function assess(rpc, row, pair, custody, codeHash) {
+async function assess(rpc, row, found, custody, codeHash) {
   if (codeHash !== row.code_hash) return { verified: false, reason: "the locker's code is not the code pinned in the registry" };
-  if (!row.abi || !row.abi_confirmed) return { verified: false, reason: "no confirmed record reader for this locker (custody only)" };
+  if (!row.abi || !row.abi_confirmed) return { verified: false, reason: row.records_note ?? "no confirmed record reader for this locker (custody only)" };
+  const pair = found.pair;
   try {
-    return row.abi === "pinklock-v2" ? await pinkRecords(rpc, row, pair, custody, rpc.timestamp) : await uncxRecords(rpc, row, pair, custody, rpc.timestamp);
+    if (row.abi === "pinklock-v2") return await pinkRecords(rpc, row, pair, custody, rpc.timestamp);
+    if (row.abi === "uncx-v2") return await uncxRecords(rpc, row, pair, custody, rpc.timestamp);
+    return await dxsaleRecords(rpc, row, found, custody, rpc.timestamp);
   } catch (e) {
     return { verified: false, reason: `records could not be read: ${redact((e.shortMessage ?? e.message).split("\n")[0])}` };
   }
@@ -90,7 +113,7 @@ export async function check(rpc, registry, input) {
   for (const [i, row] of registry.entries()) {
     if (bal[i] === 0n) continue;
     const facts = await lockerFacts(rpc, row.address);
-    lockers.push({ row, custody: bal[i], facts, assessment: await assess(rpc, row, found.pair, bal[i], facts.codeHash) });
+    lockers.push({ row, custody: bal[i], facts, assessment: await assess(rpc, row, found, bal[i], facts.codeHash) });
   }
   return { block: Number(rpc.blockNumber), timestamp: rpc.timestamp, ...found, supply, burned, lockers, shares: buckets({ supply, burned, lockers }) };
 }

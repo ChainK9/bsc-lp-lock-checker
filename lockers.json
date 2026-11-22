@@ -36,12 +36,13 @@
     "code_hash": "0x9235c7867cce162f46c25b8f8cca636e89671618d8579a0d615b09d5dac3257a",
     "abi": null,
     "abi_confirmed": false,
+    "records_note": "in this locker's verified source (contracts/DxLock_LP.sol), unlockToken pays out before the unlock date and leaves the lock open, so a lock owner can withdraw early and more than once. No LP here counts as time-locked",
     "sources": [
       "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js",
       "https://sourcify.dev/server/v2/contract/56/0xEb3a9C56d963b971d320f889bE2fb8B59853e449",
       "https://blocksec.com/blog/web3-security-dxsale-squidrouter-more"
     ],
-    "checked": "2026-11-18",
+    "checked": "2026-11-22",
     "incidents": [
       {
         "date": "2026-05-29",
@@ -52,37 +53,37 @@
         ]
       }
     ],
-    "notes": "The locker BlockSec names (0xeb3a...e449) and Rekt calls drained. Custody only."
+    "notes": "The locker BlockSec names (0xeb3a...e449) and Rekt calls drained. Verified source (Sourcify match): unlockToken has no unlock-date check, and it keeps no index by pair. Custody only."
   },
   {
     "address": "0x8655E5c4D701186D16765d1CDcef6D5287E4679a",
     "project": "DxSale",
     "version": "legacy locker (DefiLlama: LockersV3)",
     "code_hash": "0xf4ad4d81fc2ee318f4ec79a3ef6c67ae8871fb1bc38569e787372b98b711a98a",
-    "abi": null,
-    "abi_confirmed": false,
+    "abi": "dxsale-lp",
+    "abi_confirmed": true,
     "sources": [
       "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js",
       "https://sourcify.dev/server/v2/contract/56/0x8655E5c4D701186D16765d1CDcef6D5287E4679a"
     ],
-    "checked": "2026-11-18",
+    "checked": "2026-11-22",
     "incidents": [],
-    "notes": "Custody only."
+    "notes": "Verified source (Sourcify match, contracts/DxLock_LP_5b5e.sol). Records are read from the per-token lock index, which keeps each lock as it was made; see the README limits. The owner can release any lock early with platformRelease(address,uint256)."
   },
   {
     "address": "0x5b5e94485c9628793B01A38762921Dc37B6829b6",
     "project": "DxSale",
     "version": "legacy locker (DefiLlama: LockersV3)",
     "code_hash": "0x43e1dd3e1c38fed2cd6e1e5cbdf0b4ed9b652aa23324839790bc40763d1644f7",
-    "abi": null,
-    "abi_confirmed": false,
+    "abi": "dxsale-lp",
+    "abi_confirmed": true,
     "sources": [
       "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/dxsale/config.js",
       "https://sourcify.dev/server/v2/contract/56/0x5b5e94485c9628793B01A38762921Dc37B6829b6"
     ],
-    "checked": "2026-11-18",
+    "checked": "2026-11-22",
     "incidents": [],
-    "notes": "Custody only."
+    "notes": "Verified source (Sourcify match, contracts/DxLock_LP_5b5e.sol). Records are read from the per-token lock index, which keeps each lock as it was made; see the README limits. The owner can release any lock early with platformRelease(address,uint256)."
   },
   {
     "address": "0x81E0eF68e103Ee65002d3Cf766240eD1c070334d",
